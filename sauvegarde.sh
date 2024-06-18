@@ -2,24 +2,18 @@
 
 # Fonction pour afficher l'usage du script
 show_usage() {
-    echo "Usage: sauvegarde.sh [-h] [-g] [-m] [-v] [-n] [-r] [-a] [-s FICHIER] chemin"
+    echo "sauvegarde.sh: [-h] [-g] [-m] [-v] [-n] [-r] [-a] [-s] chemin.."
 }
 
-# Fonction pour afficher l'aide détaillée à partir d'un fichier texte
+# Fonction pour afficher l'aide à partir d'un fichier texte
 HELP() {
-    if [[ -f help.txt ]]; then
-        cat help.txt
-    else
-        echo "Le fichier help.txt est introuvable."
-    fi
+    cat help.txt
 }
 
 # Fonction pour afficher le nombre de fichiers et la taille totale des fichiers modifiés dans les dernières 24 heures
 afficher_nombre_taille() {
     local chemin="$1"
-    echo "Nombre de fichiers modifiés dans les dernières 24 heures :"
-    find "$chemin" -type f -mtime -1 | wc -l
-    echo "Taille totale des fichiers modifiés dans les dernières 24 heures :"
+    find "$chemin" -type f -mtime -1 -exec ls -lh {} + | awk '{ print $9 ": " $5 }'
     find "$chemin" -type f -mtime -1 -exec du -ch {} + | grep total$
 }
 
@@ -120,7 +114,7 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-# Traiter les options avec getopts
+# Traiter les options
 while getopts ":hnargms:v" opt; do
     case ${opt} in
     h) HELP ;;
@@ -143,7 +137,7 @@ while getopts ":hnargms:v" opt; do
         ;;
     m) afficher_menu ;;
     g) afficher_menu_graphique ;;
-    v) echo "Nom des auteurs : Zied Snoussi, Mouhib Dakhli. Version du code : 1.0" ;;
+    v) echo "Nom des auteurs : Zied Snoussi, Mouhib Dakhli, Version du script : 1.0" ;;
     *)
         show_usage >&2
         exit 1

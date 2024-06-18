@@ -1,0 +1,47 @@
+Aide pour le script sauvegarde.sh
+
+Description:
+Le script `sauvegarde.sh` est conçu pour archiver les fichiers modifiés dans les dernières 24 heures à partir d'un répertoire spécifié. Il offre également des fonctionnalités supplémentaires comme l'affichage du nombre de fichiers, la taille totale des fichiers modifiés, et la sauvegarde des informations sur ces fichiers.
+
+Utilisation:
+sauvegarde.sh [OPTIONS] chemin
+
+Options:
+-h           Affiche cette aide et quitte.
+-g           Affiche un menu graphique pour utiliser le script.
+-m           Affiche un menu textuel pour utiliser le script.
+-v           Affiche le nom des auteurs et la version du script.
+-n           Affiche le nombre de fichiers et la taille totale des fichiers modifiés dans les dernières 24 heures.
+-a           Archive les fichiers modifiés dans les dernières 24 heures dans une archive tar.gz.
+-r           Renomme l'archive avec la date et l'heure de la modification.
+-s FICHIER   Sauvegarde les informations sur les fichiers modifiés dans les dernières 24 heures dans le fichier spécifié.
+
+Exemples d'utilisation:
+1. Afficher l'aide:
+   ./sauvegarde.sh -h
+
+2. Afficher le nombre de fichiers et la taille totale des fichiers modifiés dans les dernières 24 heures:
+   ./sauvegarde.sh -n /chemin/vers/le/repertoire
+
+3. Archiver les fichiers modifiés dans les dernières 24 heures:
+   ./sauvegarde.sh -a /chemin/vers/le/repertoire
+
+4. Renommer une archive existante:
+   ./sauvegarde.sh -r nom_de_l'archive
+
+5. Sauvegarder les informations sur les fichiers dans un fichier:
+   ./sauvegarde.sh -s informations.txt /chemin/vers/le/repertoire
+
+6. Afficher un menu textuel pour utiliser le script:
+   ./sauvegarde.sh -m
+
+7. Afficher un menu graphique pour utiliser le script:
+   ./sauvegarde.sh -g
+
+Notes:
+- Le chemin doit être spécifié pour les options nécessitant un répertoire.
+- Assurez-vous que les permissions de fichiers et de répertoires permettent l'accès et la modification si nécessaire.
+
+Auteurs:
+Zied Snoussi, Mouhib Dakhli
+Version du script: 1.0

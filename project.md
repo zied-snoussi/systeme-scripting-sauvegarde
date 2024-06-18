@@ -1,36 +1,26 @@
-## Plan du projet
-
-### Objectif
-Créer un script `sauvegarde.sh` permettant de faire l’archive des fichiers de votre répertoire personnel.
-
-### Fonctionnalités
-
-1. **Afficher l'usage du script**
-2. **Tester la présence d'au moins un argument**
-3. **Afficher l'aide à partir d'un fichier texte**
-4. **Afficher le nombre de fichiers et la taille totale des fichiers modifiés dans les dernières 24 heures**
-5. **Archiver les fichiers modifiés dans les dernières 24 heures**
-6. **Options du script**
-
-### Script complet
-
 ```bash
 #!/bin/bash
 
-# Fonction pour afficher l'usage
+# Fonction pour afficher l'usage du script
 show_usage() {
-    echo "sauvegarde.sh: [-h] [-g] [-m] [-v] [-n] [-r] [-a] [-s] chemin.."
+    echo "Usage: sauvegarde.sh [-h] [-g] [-m] [-v] [-n] [-r] [-a] [-s FICHIER] chemin"
 }
 
-# Fonction pour afficher l'aide
+# Fonction pour afficher l'aide détaillée à partir d'un fichier texte
 HELP() {
-    cat help.txt
+    if [[ -f help.txt ]]; then
+        cat help.txt
+    else
+        echo "Le fichier help.txt est introuvable."
+    fi
 }
 
 # Fonction pour afficher le nombre de fichiers et la taille totale des fichiers modifiés dans les dernières 24 heures
 afficher_nombre_taille() {
     local chemin="$1"
-    find "$chemin" -type f -mtime -1 -exec ls -lh {} + | awk '{ print $9 ": " $5 }'
+    echo "Nombre de fichiers modifiés dans les dernières 24 heures :"
+    find "$chemin" -type f -mtime -1 | wc -l
+    echo "Taille totale des fichiers modifiés dans les dernières 24 heures :"
     find "$chemin" -type f -mtime -1 -exec du -ch {} + | grep total$
 }
 
@@ -58,7 +48,7 @@ sauvegarder_infos() {
     echo "Informations sauvegardées dans $fichier"
 }
 
-# Fonction pour afficher le menu textuel
+# Fonction pour afficher un menu textuel
 afficher_menu() {
     while true; do
         echo "Menu :"
@@ -119,7 +109,7 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-# Traiter les options
+# Traiter les options avec getopts
 while getopts ":hnargms:v" opt; do
     case ${opt} in
         h) HELP ;;
@@ -134,29 +124,58 @@ while getopts ":hnargms:v" opt; do
            sauvegarder_infos "$fichier" "$chemin" ;;
         m) afficher_menu ;;
         g) afficher_menu_graphique ;;
-        v) echo "Nom des auteurs : John Doe, Version du code : 1.0" ;;
+        v) echo "Nom des auteurs : Zied Snoussi, Mouhib Dakhli. Version du code : 1.0" ;;
         *) show_usage >&2
            exit 1 ;;
     esac
 done
 ```
 
-### Détails des étapes
+### Explications et commentaires
 
-1. **Afficher l'usage du script** :
-    - La fonction `show_usage` affiche un message d'utilisation sur la sortie standard.
+- **Fonction `show_usage`** :
+  - Affiche un message d'utilisation expliquant comment utiliser le script.
 
-2. **Tester la présence d'au moins un argument** :
-    - Si aucun argument n'est passé, `show_usage` est appelé et le script se termine avec une erreur.
+- **Fonction `HELP`** :
+  - Affiche l'aide détaillée en lisant le contenu d'un fichier texte nommé `help.txt`.
 
-3. **Afficher l'aide à partir d'un fichier texte** :
-    - La fonction `HELP` affiche le contenu d'un fichier texte `help.txt`.
+- **Fonction `afficher_nombre_taille`** :
+  - Affiche le nombre de fichiers et la taille totale des fichiers modifiés dans les dernières 24 heures dans le répertoire spécifié.
 
-4. **Afficher le nombre de fichiers et la taille totale des fichiers modifiés dans les dernières 24 heures** :
-    - La fonction `afficher_nombre_taille` utilise `find` et `ls` pour afficher les fichiers modifiés et leur taille.
+- **Fonction `archiver_fichiers`** :
+  - Crée une archive tar.gz contenant les fichiers modifiés dans les dernières 24 heures dans le répertoire spécifié.
 
-5. **Archiver les fichiers modifiés dans les dernières 24 heures** :
-    - La fonction `archiver_fichiers` crée une archive `tar.gz` des fichiers modifiés dans les dernières 24 heures.
+- **Fonction `renommer_archive`** :
+  - Renomme une archive existante en y ajoutant la date et l'heure de modification.
 
-6. **Options du script** :
-    - Les options du script sont gérées avec `getopts` pour inclure toutes les fonctionnalités demandées.
+- **Fonction `sauvegarder_infos`** :
+  - Sauvegarde les informations sur les fichiers archivés (nom, type, droits d'accès, date et heure de modification) dans un fichier spécifié.
+
+- **Fonction `afficher_menu`** :
+  - Affiche un menu textuel permettant de sélectionner et d'exécuter différentes fonctions du script.
+
+- **Fonction `afficher_menu_graphique`** :
+  - Affiche un menu graphique en utilisant YAD pour permettre une gestion plus conviviale des fonctionnalités.
+
+- **Traitement des options avec `getopts`** :
+  - Utilisation de `getopts` pour gérer les options du script et appeler les fonctions appropriées.
+
+### Prérequis
+
+- Assurez-vous que le fichier `help.txt` existe et contient l'aide détaillée.
+- Installez YAD pour utiliser le menu graphique :
+  ```sh
+  sudo apt-get install yad
+  ```
+
+### Exécution
+
+- Rendre le script exécutable :
+  ```sh
+  chmod +x sauvegarde.sh
+  ```
+
+- Lancer le script avec les options désirées :
+  ```sh
+  ./sauvegarde.sh -h
+  ```
