@@ -79,33 +79,46 @@ afficher_menu() {
     done
 }
 
-# Fonction pour afficher un menu graphique (utilisation de YAD)
+# Call the menu function
 afficher_menu_graphique() {
-    yad --form --title "Sauvegarde" --field "Option":CB "Afficher l'usage!Afficher l'aide!Afficher le nombre de fichiers et la taille totale!Archiver les fichiers!Renommer l'archive!Sauvegarder les informations!Quitter" | while read choix; do
-        case $choix in
-        "Afficher l'usage") show_usage ;;
-        "Afficher l'aide") HELP ;;
-        "Afficher le nombre de fichiers et la taille totale")
-            chemin=$(yad --entry --title "Chemin" --text "Entrez le chemin :")
-            afficher_nombre_taille "$chemin"
-            ;;
-        "Archiver les fichiers")
-            chemin=$(yad --entry --title "Chemin" --text "Entrez le chemin :")
-            archiver_fichiers "$chemin"
-            ;;
-        "Renommer l'archive")
-            archive_name=$(yad --entry --title "Archive" --text "Entrez le nom de l'archive :")
-            renommer_archive "$archive_name"
-            ;;
-        "Sauvegarder les informations")
-            fichier=$(yad --entry --title "Fichier de sauvegarde" --text "Entrez le fichier de sauvegarde :")
-            chemin=$(yad --entry --title "Chemin" --text "Entrez le chemin :")
-            sauvegarder_infos "$fichier" "$chemin"
-            ;;
-        "Quitter") exit 0 ;;
-        *) yad --text "Choix invalide" ;;
-        esac
-    done
+    choix=$(yad --list --title "Sauvegarde" --text "Choisissez une option:" \
+        --column "Option" \
+        "Afficher l'usage" \
+        "Afficher l'aide" \
+        "Afficher le nombre de fichiers et la taille totale" \
+        "Archiver les fichiers" \
+        "Renommer l'archive" \
+        "Sauvegarder les informations" \
+        "Quitter" \
+        --width 400 --height 300)
+
+    # Extract just the option text, removing any trailing pipe and number
+    option=$(echo "$choix" | cut -d'|' -f1)
+
+    case "$option" in
+    "Afficher l'usage") show_usage ;;
+    "Afficher l'aide") HELP ;;
+    "Afficher le nombre de fichiers et la taille totale")
+        chemin=$(yad --entry --title "Chemin" --text "Entrez le chemin :")
+        afficher_nombre_taille "$chemin"
+        ;;
+    "Archiver les fichiers")
+        chemin=$(yad --entry --title "Chemin" --text "Entrez le chemin :")
+        archiver_fichiers "$chemin"
+        ;;
+    "Renommer l'archive")
+        archive_name=$(yad --entry --title "Archive" --text "Entrez le nom de l'archive :")
+        renommer_archive "$archive_name"
+        ;;
+    "Sauvegarder les informations")
+        fichier=$(yad --entry --title "Fichier de sauvegarde" --text "Entrez le fichier de sauvegarde :")
+        chemin=$(yad --entry --title "Chemin" --text "Entrez le chemin :")
+        sauvegarder_infos "$fichier" "$chemin"
+        ;;
+    "Quitter") exit 0 ;;
+    "") yad --error --text "Aucune option sélectionnée" ;;
+    *) yad --error --text "Choix invalide: $option" ;;
+    esac
 }
 
 # Vérifier la présence d'au moins un argument
